@@ -7,10 +7,10 @@
       @drag-start="dragStart"
       :drop-placeholder="upperDropPlaceholderOptions"
     >
-      <Draggable v-for="column in scene.children" :key="column.id">
+      <Draggable v-for="column in scene.columns" :key="column.id">
         <div :class="column.props.className">
-          <div class="card-column-header">
-            <span class="column-drag-handle">&#x2630;</span>
+          <div class="card-column-header column-drag-handle">
+            p0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
             {{ column.name }}
           </div>
           <Container
@@ -23,7 +23,7 @@
             drop-class="card-ghost-drop"
             :drop-placeholder="dropPlaceholderOptions"
           >
-            <Draggable v-for="card in column.children" :key="card.id">
+            <Draggable v-for="card in column.cards" :key="card.id">
               <div :class="card.props.className" :style="card.props.style">
                 <p>{{ card.data }}</p>
               </div>
@@ -44,24 +44,66 @@ const scene = {
   props: {
     orientation: "horizontal"
   },
-  children: {
-    id: 1,
-    type: "container",
-    name: ["test"],
-    props: {
-      orientation: "vertical",
-      className: "card-container"
-    },
-    children: {
-      type: "draggable",
-      id: 12,
+  columns: [
+    {
+      id: 1,
+      type: "container",
+      name: "column name",
       props: {
-        className: "card",
-        style: { backgroundColor: "almond" }
+        orientation: "vertical",
+        className: "card-container"
       },
-      data: "asdfasdfasdfasdf"
+      cards: [
+        {
+          type: "draggable",
+          id: 12,
+          props: {
+            className: "card",
+            style: { backgroundColor: "blue" }
+          },
+          data: "card data4"
+        },
+        {
+          type: "draggable",
+          id: 13,
+          props: {
+            className: "card",
+            style: { backgroundColor: "blue" }
+          },
+          data: "card data3"
+        }
+      ]
+    },
+    {
+      id: 2,
+      type: "container",
+      name: "column name",
+      props: {
+        orientation: "vertical",
+        className: "card-container"
+      },
+      cards: [
+        {
+          type: "draggable",
+          id: 14,
+          props: {
+            className: "card",
+            style: { backgroundColor: "blue" }
+          },
+          data: "card data2"
+        },
+        {
+          type: "draggable",
+          id: 15,
+          props: {
+            className: "card",
+            style: { backgroundColor: "blue" }
+          },
+          data: "card data1"
+        }
+      ]
     }
-  }
+  ]
 };
 export default {
   name: "Kanban",
@@ -85,27 +127,28 @@ export default {
   methods: {
     onColumnDrop(dropResult) {
       const scene = Object.assign({}, this.scene);
-      scene.children = this.applyDrag(scene.children, dropResult);
+      scene.columns = this.applyDrag(scene.columns, dropResult);
       this.scene = scene;
     },
 
     onCardDrop(columnId, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
         const scene = Object.assign({}, this.scene);
-        const column = scene.children.filter(p => p.id === columnId)[0];
-        const columnIndex = scene.children.indexOf(column);
+        const column = scene.columns.filter(p => p.id === columnId)[0];
+        const columnIndex = scene.columns.indexOf(column);
 
         const newColumn = Object.assign({}, column);
-        newColumn.children = this.applyDrag(newColumn.children, dropResult);
-        scene.children.splice(columnIndex, 1, newColumn);
+        newColumn.cards = this.applyDrag(newColumn.cards, dropResult);
+        scene.columns.splice(columnIndex, 1, newColumn);
 
         this.scene = scene;
+        console.log(this.scene);
       }
     },
 
     getCardPayload(columnId) {
       return index => {
-        return this.scene.children.filter(p => p.id === columnId)[0].children[
+        return this.scene.columns.filter(p => p.id === columnId)[0].cards[
           index
         ];
       };

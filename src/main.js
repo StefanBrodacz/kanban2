@@ -1,4 +1,9 @@
 import Vue from "vue";
+
+import "./utils/polyfills";
+
+import "./assets/demos.css";
+
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";

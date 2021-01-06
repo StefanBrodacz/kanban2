@@ -14,7 +14,6 @@ export default {
       if (addedIndex !== null) {
         result.splice(addedIndex, 0, itemToAdd);
       }
-
       return result;
     },
     generateItems(count, creator) {
