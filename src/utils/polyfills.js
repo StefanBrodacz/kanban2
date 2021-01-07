@@ -1,1 +1,1 @@
-Object.assign = require('object-assign')
+Object.assign = require("object-assign");

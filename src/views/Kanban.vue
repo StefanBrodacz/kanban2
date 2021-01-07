@@ -10,7 +10,6 @@
       <Draggable v-for="column in scene.columns" :key="column.id">
         <div :class="column.props.className">
           <div class="card-column-header column-drag-handle">
-            p0----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
             {{ column.name }}
           </div>
           <Container
@@ -24,9 +23,15 @@
             :drop-placeholder="dropPlaceholderOptions"
           >
             <Draggable v-for="card in column.cards" :key="card.id">
-              <div :class="card.props.className" :style="card.props.style">
-                <p>{{ card.data }}</p>
-              </div>
+              <v-card
+                :style="card.props.style"
+                elevation="2"
+                shaped
+                class="mb-2"
+                loading
+              >
+                {{ card.data }}
+              </v-card>
             </Draggable>
           </Container>
         </div>
@@ -59,7 +64,7 @@ const scene = {
           id: 12,
           props: {
             className: "card",
-            style: { backgroundColor: "blue" }
+            style: { backgroundColor: "#cddeef" }
           },
           data: "card data4"
         },
@@ -68,7 +73,7 @@ const scene = {
           id: 13,
           props: {
             className: "card",
-            style: { backgroundColor: "blue" }
+            style: { backgroundColor: "#dcb893" }
           },
           data: "card data3"
         }
@@ -88,7 +93,7 @@ const scene = {
           id: 14,
           props: {
             className: "card",
-            style: { backgroundColor: "blue" }
+            style: { backgroundColor: "#cdefde" }
           },
           data: "card data2"
         },
@@ -97,7 +102,7 @@ const scene = {
           id: 15,
           props: {
             className: "card",
-            style: { backgroundColor: "blue" }
+            style: { backgroundColor: "#efcdde" }
           },
           data: "card data1"
         }
