@@ -1,121 +1,107 @@
 <template>
-  <div class="card-scene">
+  <v-container>
     <Container
+      class="row"
       orientation="horizontal"
       @drop="onColumnDrop($event)"
       drag-handle-selector=".column-drag-handle"
       @drag-start="dragStart"
       :drop-placeholder="upperDropPlaceholderOptions"
     >
-      <Draggable v-for="column in scene.columns" :key="column.id">
-        <div :class="column.props.className">
-          <div class="card-column-header column-drag-handle">
+      <Draggable
+        :class="`col-${12 / scene.columns.length}`"
+        v-for="column in scene.columns"
+        :key="column.id"
+      >
+        <v-card outlined class="ma-1">
+          <v-card-title class="column-drag-handle">
             {{ column.name }}
-          </div>
-          <Container
-            group-name="col"
-            @drop="e => onCardDrop(column.id, e)"
-            @drag-start="e => log('drag start', e)"
-            @drag-end="e => log('drag end', e)"
-            :get-child-payload="getCardPayload(column.id)"
-            drag-class="card-ghost"
-            drop-class="card-ghost-drop"
-            :drop-placeholder="dropPlaceholderOptions"
-          >
-            <Draggable v-for="card in column.cards" :key="card.id">
-              <v-card
-                :style="card.props.style"
-                elevation="2"
-                shaped
-                class="mb-2"
-                loading
-              >
-                {{ card.data }}
-              </v-card>
-            </Draggable>
-          </Container>
-        </div>
+          </v-card-title>
+          <v-card-text>
+            <Container
+              group-name="col"
+              @drop="e => onCardDrop({ columnId: column.id, dropResult: e })"
+              @drag-start="e => log('drag start', e)"
+              @drag-end="e => log('drag end', e)"
+              :get-child-payload="getCardPayload(column.id)"
+              drag-class="card-ghost"
+              drop-class="card-ghost-drop"
+              :drop-placeholder="dropPlaceholderOptions"
+            >
+              <Draggable v-for="card in column.cards" :key="card.id">
+                <v-card class="mb-1 ma-1" outlined>
+                  <v-card-subtitle>
+                    {{ card.data }}
+                  </v-card-subtitle>
+                  <v-card-text>
+                    <v-row align="center" class="mx-0">
+                      <v-rating
+                        :value="4.5"
+                        color="amber"
+                        dense
+                        half-increments
+                        readonly
+                        size="14"
+                      ></v-rating>
+
+                      <div class="grey--text ml-4">
+                        4.5 (413)
+                      </div>
+                      <div class="my-4 subtitle-1">
+                        $ • Italian, Cafe
+                      </div>
+
+                      <div class="mb-5">
+                        Small plates, salads & sandwiches - an intimate setting
+                        with 12 indoor seats plus patio seating.
+                      </div>
+                    </v-row>
+                    <v-divider></v-divider>
+                    <v-row
+                      align="center"
+                      class="font-weight-bold ml-8 mt-4 mb-2"
+                      v-if="card.timeline"
+                    >
+                      {{ card.timeline.title }}
+                    </v-row>
+                    <v-timeline align-top dense v-if="card.timeline">
+                      <v-timeline-item
+                        v-for="message in card.timeline.messages"
+                        :key="message.time"
+                        :color="message.color"
+                        small
+                      >
+                        <div>
+                          <div class="font-weight-normal">
+                            <strong>{{ message.from }}</strong> @{{
+                              message.time
+                            }}
+                          </div>
+                          <div>{{ message.message }}</div>
+                        </div>
+                      </v-timeline-item>
+                    </v-timeline>
+                  </v-card-text>
+                </v-card>
+              </Draggable>
+            </Container>
+          </v-card-text>
+        </v-card>
       </Draggable>
     </Container>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
 import DragMixin from "@/mixins/DragMixin";
+import { mapActions, mapState } from "vuex";
 
-const scene = {
-  type: "container",
-  props: {
-    orientation: "horizontal"
-  },
-  columns: [
-    {
-      id: 1,
-      type: "container",
-      name: "column name",
-      props: {
-        orientation: "vertical",
-        className: "card-container"
-      },
-      cards: [
-        {
-          type: "draggable",
-          id: 12,
-          props: {
-            className: "card",
-            style: { backgroundColor: "#cddeef" }
-          },
-          data: "card data4"
-        },
-        {
-          type: "draggable",
-          id: 13,
-          props: {
-            className: "card",
-            style: { backgroundColor: "#dcb893" }
-          },
-          data: "card data3"
-        }
-      ]
-    },
-    {
-      id: 2,
-      type: "container",
-      name: "column name",
-      props: {
-        orientation: "vertical",
-        className: "card-container"
-      },
-      cards: [
-        {
-          type: "draggable",
-          id: 14,
-          props: {
-            className: "card",
-            style: { backgroundColor: "#cdefde" }
-          },
-          data: "card data2"
-        },
-        {
-          type: "draggable",
-          id: 15,
-          props: {
-            className: "card",
-            style: { backgroundColor: "#efcdde" }
-          },
-          data: "card data1"
-        }
-      ]
-    }
-  ]
-};
 export default {
   name: "Kanban",
   components: { Container, Draggable },
   data() {
     return {
-      scene,
       upperDropPlaceholderOptions: {
         className: "cards-drop-preview",
         animationDuration: "150",
@@ -128,28 +114,15 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapState({ scene: state => state.board.board })
+  },
   mixins: [DragMixin],
   methods: {
-    onColumnDrop(dropResult) {
-      const scene = Object.assign({}, this.scene);
-      scene.columns = this.applyDrag(scene.columns, dropResult);
-      this.scene = scene;
-    },
-
-    onCardDrop(columnId, dropResult) {
-      if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-        const scene = Object.assign({}, this.scene);
-        const column = scene.columns.filter(p => p.id === columnId)[0];
-        const columnIndex = scene.columns.indexOf(column);
-
-        const newColumn = Object.assign({}, column);
-        newColumn.cards = this.applyDrag(newColumn.cards, dropResult);
-        scene.columns.splice(columnIndex, 1, newColumn);
-
-        this.scene = scene;
-        console.log(this.scene);
-      }
-    },
+    ...mapActions({
+      onColumnDrop: "board/dropColumn",
+      onCardDrop: "board/dropCard"
+    }),
 
     getCardPayload(columnId) {
       return index => {
@@ -169,4 +142,8 @@ export default {
 };
 </script>
 
-<style lang="scss" module></style>
+<style lang="scss" scoped>
+.container .smooth-dnd-container.horizontal {
+  display: flex;
+}
+</style>
