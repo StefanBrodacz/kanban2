@@ -10,19 +10,22 @@ export const state = {
   board
 };
 export const mutations = {
-  COLUMN_DROP(state, dropResult) {
-    applyDrag(state.board.columns, dropResult);
+  COLUMN_DROP(state, { rowId, dropResult }) {
+    console.log(dropResult);
+    applyDrag(state.board.rows[rowId].columns, dropResult);
   },
-  CARD_DROP(state, { columnId, dropResult }) {
+  CARD_DROP(state, { rowId, columnId, dropResult }) {
     if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-      const column = state.board.columns.filter(p => p.id === columnId)[0];
+      const column = state.board.rows[rowId].columns.filter(
+        p => p.id === columnId
+      )[0];
       applyDrag(column.cards, dropResult);
     }
   }
 };
 export const actions = {
-  dropColumn({ commit, state }, dropResult) {
-    commit("COLUMN_DROP", dropResult);
+  dropColumn({ commit, state }, { rowId, dropResult }) {
+    commit("COLUMN_DROP", { rowId, dropResult });
     return KanbanService.saveBoard(state.board)
       .then(() => {
         console.log("success");
@@ -32,12 +35,15 @@ export const actions = {
         throw error;
       });
   },
-  dropCard({ commit }, { columnId, dropResult }) {
-    commit("CARD_DROP", { columnId, dropResult });
+  dropCard({ commit }, { rowId, columnId, dropResult }) {
+    commit("CARD_DROP", { rowId, columnId, dropResult });
+    console.log({ rowId, columnId, dropResult });
   }
 };
 
 function applyDrag(arr, dragResult) {
+  console.log(arr);
+  console.log(dragResult);
   const { removedIndex, addedIndex, payload } = dragResult;
   if (removedIndex === null && addedIndex === null) return arr;
   let itemToAdd = payload;

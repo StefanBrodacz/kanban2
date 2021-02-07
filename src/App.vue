@@ -14,16 +14,7 @@
         v-for="link in links"
         :key="`${link.label}-header-link`"
       >
-        <v-badge
-          color="deep-purple accent-4"
-          icon="mdi-alert"
-          offset-x="3px"
-          offset-y="7px"
-          overlap
-          bordered
-        >
-          {{ link.label }}
-        </v-badge>
+        {{ link.label }}
       </v-btn>
 
       <v-divider class="mx-4" vertical></v-divider>
@@ -84,8 +75,16 @@ export default {
         url: "/signup"
       },
       {
-        label: "Kanban",
+        label: "Status Flow",
+        url: "/status_flow"
+      },
+      {
+        label: "User Kanban",
         url: "/kanban"
+      },
+      {
+        label: "Kanban-2",
+        url: "/kanban-2"
       }
     ]
   }),
@@ -110,10 +109,12 @@ export default {
   opacity: 0;
   transform: translateX(10px);
 }
+
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.2s ease;
 }
+
 .slide-fade-leave-to {
   opacity: 0;
   transform: translateX(-10px);
@@ -123,10 +124,12 @@ export default {
   opacity: 0;
   transform: scale(1.5);
 }
+
 .scale-enter-active,
 .scale-leave-active {
   transition: all 0.3s cubic-bezier(0.46, 1.64, 0.41, 0.8);
 }
+
 .scale-leave-to {
   opacity: 0;
   transform: scale(1.5);

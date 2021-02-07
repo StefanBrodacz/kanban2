@@ -2,6 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Kanban from "@/views/Kanban";
+import Kanban2 from "@/views/Kanban-2";
+import StatusFlow from "@/components/StatusFlow";
 
 Vue.use(VueRouter);
 
@@ -21,9 +23,19 @@ const routes = [
       import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
+    path: "/status_flow",
+    name: "Status Flow",
+    component: StatusFlow
+  },
+  {
     path: "/kanban",
     name: "Kanban",
     component: Kanban
+  },
+  {
+    path: "/kanban-2",
+    name: "Kanban-2",
+    component: Kanban2
   },
   {
     path: "/login",
