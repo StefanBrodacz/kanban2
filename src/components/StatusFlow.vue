@@ -1,5 +1,11 @@
 <template>
-  <div style="width: 100%; height: 100%" @wheel="zoom" ref="zoomable">
+  <div
+    @mousedown.middle="mouseMiddleDown"
+    style=""
+    @wheel="zoom"
+    ref="zoomable"
+    id="viewport"
+  >
     <svg width="100%" height="100%">
       <Link
         v-for="(link, statusId) in links"
@@ -20,17 +26,26 @@
 import Link from "@/components/StatusFlow/Link";
 
 import Box from "@/components/StatusFlow/Box";
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "StatusFlow",
   data() {
     return {
-      zX: 0
+      dialog: true,
+      zX: 0,
+      viewStartPosition: { x: 0, y: 0 }
     };
   },
   components: { Link, Box },
+  mounted() {
+    let rect = this.$refs.zoomable.getBoundingClientRect();
+    this.setViewportOffset({ x: rect.left, y: rect.top });
+  },
   computed: {
-    ...mapState({ flow: state => state.flow.statusFlow }),
+    ...mapState({
+      flow: state => state.flow.statusFlow,
+      dragPayload: state => state.flow.dragPayload
+    }),
     links() {
       let links = [];
       for (let status of this.flow.statuses) {
@@ -38,11 +53,14 @@ export default {
           links.push({ origin: status, target: status.link });
         }
       }
-      console.log(links);
       return links;
     }
   },
   methods: {
+    ...mapActions({
+      setViewportOffset: "flow/setViewportOffset",
+      dragView: "flow/dragView"
+    }),
     zoom(e) {
       let zoomable = this.$refs.zoomable;
 
@@ -58,14 +76,43 @@ export default {
       }
 
       e.preventDefault();
+    },
+    mouseMiddleDown(e) {
+      this.viewStartPosition.x = e.x;
+      this.viewStartPosition.y = e.y;
+      document.onmousemove = this.onViewMove;
+      document.onmouseup = this.onViewStopDrag;
+    },
+    onViewMove(e) {
+      let xMove = this.viewStartPosition.x - e.x;
+      let yMove = this.viewStartPosition.y - e.y;
+      this.viewStartPosition.x = e.x;
+      this.viewStartPosition.y = e.y;
+      this.dragView({ x: xMove, y: yMove });
+    },
+    onViewStopDrag() {
+      document.onmousemove = null;
+      document.onmouseup = null;
+    },
+    ontop() {
+      return this.dragPayload.originId !== null;
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+#viewport {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+}
 svg {
   shape-rendering: optimizeSpeed;
   position: relative;
+  z-index: 1;
+}
+.ontop {
   z-index: 101;
 }
 </style>

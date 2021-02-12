@@ -3,7 +3,7 @@ export default {
     {
       id: 1,
       title: "Nowy",
-      position: { x: 99, y: 96 },
+      position: { x: 255, y: 237 },
       link: [
         {
           targetId: 2,
@@ -21,7 +21,7 @@ export default {
     {
       id: 2,
       title: "Analizowany",
-      position: { x: 263, y: 40 },
+      position: { x: 419, y: 181 },
       link: [
         {
           targetId: 3,
@@ -34,7 +34,7 @@ export default {
     {
       id: 3,
       title: "Do realizacji",
-      position: { x: 1077, y: 103 },
+      position: { x: 1233, y: 244 },
       link: [
         {
           targetId: 4,
@@ -47,7 +47,7 @@ export default {
     {
       id: 4,
       title: "W trakcie",
-      position: { x: 1020, y: 279 },
+      position: { x: 1176, y: 420 },
       link: [
         {
           targetId: 5,
@@ -70,7 +70,7 @@ export default {
     {
       id: 41,
       title: "Need feedback",
-      position: { x: 614, y: 521 },
+      position: { x: 770, y: 662 },
       link: [
         {
           targetId: 1,
@@ -88,7 +88,7 @@ export default {
     {
       id: 43,
       title: "Waiting for feedback",
-      position: { x: 274, y: 410 },
+      position: { x: 430, y: 551 },
       link: [
         {
           targetId: 1,
@@ -102,8 +102,8 @@ export default {
         },
         {
           targetId: 10,
-          node: { out: 4, in: 6 },
-          in: { position: { x: 387, y: 232 }, socket: 6 }
+          node: { out: 4, in: 4 },
+          in: { position: { x: 387, y: 232 }, socket: 4 }
         }
       ],
       width: 149
@@ -111,12 +111,12 @@ export default {
     {
       id: 42,
       title: "Reopen",
-      position: { x: 941, y: 529 },
+      position: { x: 1097, y: 670 },
       link: [
         {
           targetId: 4,
-          node: { out: 1, in: 6 },
-          in: { position: { x: 1055, y: 279 }, socket: 6 }
+          node: { out: 1, in: 5 },
+          in: { position: { x: 1055, y: 279 }, socket: 5 }
         }
       ],
       width: 98
@@ -124,7 +124,7 @@ export default {
     {
       id: 5,
       title: "Wykonane",
-      position: { x: 1195, y: 509 },
+      position: { x: 1351, y: 650 },
       link: [
         {
           targetId: 6,
@@ -137,7 +137,7 @@ export default {
     {
       id: 6,
       title: "Czeka na tag",
-      position: { x: 1332, y: 372 },
+      position: { x: 1488, y: 513 },
       link: [
         {
           targetId: 7,
@@ -150,7 +150,7 @@ export default {
     {
       id: 7,
       title: "Do realizacji w QA",
-      position: { x: 1335, y: 68 },
+      position: { x: 1491, y: 209 },
       link: [
         {
           targetId: 8,
@@ -163,7 +163,7 @@ export default {
     {
       id: 8,
       title: "W testach QA",
-      position: { x: 760, y: 357 },
+      position: { x: 916, y: 498 },
       link: [
         {
           targetId: 9,
@@ -181,7 +181,7 @@ export default {
     {
       id: 9,
       title: "Gotowe do wydania",
-      position: { x: 544, y: 136 },
+      position: { x: 700, y: 277 },
       link: [
         {
           targetId: 10,
@@ -194,7 +194,7 @@ export default {
     {
       id: 10,
       title: "DONE",
-      position: { x: 352, y: 232 },
+      position: { x: 508, y: 373 },
       link: [
         {
           targetId: 1,

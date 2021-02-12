@@ -105,6 +105,9 @@ export default {
 };
 </script>
 <style>
+* {
+  transition: 0.4s background-color ease-in-out;
+}
 .slide-fade-enter {
   opacity: 0;
   transform: translateX(10px);

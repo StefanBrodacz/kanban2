@@ -35,21 +35,36 @@ export default {
     }
   },
   computed: {
-    ...mapState({ flow: state => state.flow.statusFlow }),
+    ...mapState({
+      flow: state => state.flow.statusFlow,
+      dragPayload: state => state.flow.dragPayload
+    }),
     renderedPathes() {
       let pathes = [];
 
-      let xOut = this.originBox.position.x + this.originBox.width / 2;
-      let originGap = this.originBox.width / 12;
+      let xOut = this.originBox.position.x + this.originBox.width;
+      let originGap = 9;
       let y = this.originBox.position.y;
 
       for (let link of this.links) {
-        let x2 = link.in.position.x;
-        let y2 = link.in.position.y;
+        let x2 =
+          this.targetBoxes(link.targetId).position.x +
+          link.in.socket * originGap -
+          3;
+        let y2 = this.targetBoxes(link.targetId).position.y;
+        // let y2 = link.in.position.y;
+        if (
+          this.dragPayload.originId === this.originBox.id &&
+          this.dragPayload.targetId === link.targetId &&
+          this.dragPayload.nodeIn === link.in.socket
+        ) {
+          x2 = this.dragPayload.position.x;
+          y2 = this.dragPayload.position.y;
+        }
         pathes.push({
-          data: `m ${xOut + link.node.out * originGap} ${y} l 0 ${-10 -
+          data: `m ${xOut - link.node.out * originGap} ${y} l 0 ${-10 -
             link.node.out * 4} l ${x2 -
-            xOut -
+            xOut +
             link.node.out * originGap} 0 L ${x2} ${y2}`,
           endPosition: { x: x2, y: y2 },
           originId: this.originBox.id,
@@ -72,14 +87,14 @@ export default {
   position: relative;
   z-index: -1;
   cursor: pointer;
-  stroke: #999999 !important;
+  stroke: var(--v-primary-darken4) !important;
   stroke-linejoin: round;
-  stroke-dasharray: 3;
+  stroke-dasharray: 2;
   &:hover {
     stroke: #64ffda !important;
-    animation: dash2 15s linear;
+    //animation: dash2 15s linear;
   }
-  animation: dash 15s linear;
+  //animation: dash 15s linear;
 }
 
 @keyframes dash {

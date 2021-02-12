@@ -1,43 +1,50 @@
 <template>
   <div
     draggable
-    @dragstart="onDrag"
+    @dragstart.self="onDrag"
     @dragenter.prevent
     @mousedown.self="onStartDrag"
     @mouseup="onStopDrag"
-    @mouseover="mouseOver"
+    @mouseover.self="mouseOver"
     @mouseout="mouseOut"
     ref="draggableContainer"
     id=""
     class="draggable-container rounded "
     style="z-index: 9"
+    :style="{ top: y, left: x }"
   >
     {{ status.title }}
     <div class="inputs" ref="inputs">
-      <div class="inputSlot circle" style="top:-5px; left: 1px"></div>
-      <div class="inputSlot circle" style="top:-4px; left: 9px"></div>
-      <div class="inputSlot circle" style="top:-4px; left: 17px"></div>
-      <div class="inputSlot circle" style="top:-4px; left: 25px"></div>
-      <div class="inputSlot circle" style="top:-4px; left: 33px"></div>
-      <div class="inputSlot circle" style="top:23px; left: 1px"></div>
-      <div class="inputSlot circle" style="top:23px; left: 9px"></div>
-      <div class="inputSlot circle" style="top:23px; left: 17px"></div>
-      <div class="inputSlot circle" style="top:23px; left: 25px"></div>
-      <div class="inputSlot circle" style="top:23px; left: 33px"></div>
+      <SocketIn
+        v-for="id in configSockets"
+        :key="'in' + id"
+        :linkNo="id"
+        :status="status"
+      />
+      <SocketOut
+        v-for="id in configSockets"
+        :key="id"
+        :linkNo="id"
+        :status="status"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import SocketOut from "@/components/StatusFlow/Link/SocketOut";
+import SocketIn from "@/components/StatusFlow/Link/SocketIn";
 
 export default {
   name: "Box",
+  components: { SocketIn, SocketOut },
   props: {
     status: { type: Object, required: true }
   },
   data: function() {
     return {
+      configSockets: [1, 2, 3, 4, 5],
       positions: {
         currentX: 0,
         currentY: 0,
@@ -46,21 +53,35 @@ export default {
       }
     };
   },
+  computed: {
+    x: function() {
+      return this.status.position.x + "px";
+    },
+    y: function() {
+      return this.status.position.y + "px";
+    }
+  },
   mounted() {
-    this.$refs.draggableContainer.style.top = this.status.position.y + "px";
-    this.$refs.draggableContainer.style.left = this.status.position.x + "px";
-    this.setWidth({
-      statusId: this.status.id,
-      width: this.$refs.draggableContainer.clientWidth
+    // this.$refs.draggableContainer.style.top = this.y + "px";
+    // this.$refs.draggableContainer.style.left = this.x + "px";
+    this.$nextTick(function() {
+      this.setWidth({
+        statusId: this.status.id,
+        width: this.$refs.draggableContainer.clientWidth
+      });
     });
   },
   methods: {
-    ...mapActions({ dragStatus: "flow/dragStatus", setWidth: "flow/setWidth" }),
+    ...mapActions({
+      dragStatus: "flow/dragStatus",
+      setWidth: "flow/setWidth",
+      setDragPayload: "flow/setDragPayload"
+    }),
     mouseOver() {
       // this.$refs.inputs.style.opacity = 1;
     },
     mouseOut() {
-      this.$refs.inputs.style.opacity = 0;
+      // this.$refs.inputs.style.opacity = 0;
     },
     onDrag(event) {
       event.preventDefault();
@@ -88,8 +109,16 @@ export default {
     },
     onStopDrag() {
       this.$refs.draggableContainer.style["z-index"] = 9;
+
       document.onmouseup = null;
       document.onmousemove = null;
+
+      this.setDragPayload({
+        originId: null,
+        targetId: null,
+        position: { x: 0, y: 0 },
+        nodeIn: null
+      });
     },
     onStartDrag() {
       this.$refs.draggableContainer.style["z-index"] = 100;
@@ -99,7 +128,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .draggable-container {
-  /*transform: rotate3d(1, 1, 1, 45deg);*/
   cursor: move !important;
   position: absolute;
   z-index: 9;
@@ -108,8 +136,7 @@ export default {
   color: var(--v-primary-base);
   background-color: var(--v-secondary-base);
   padding: 3px 15px 4px 15px;
-  //box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
-
+  //transform: scale(1, 1) rotate3d(1, 1, 1, 0deg);
   transition: box-shadow 300ms, transform 300ms;
   border-color: var(--v-primary-lighten5);
   border-width: 0.1px;
@@ -123,65 +150,23 @@ export default {
     width: 100%;
     height: 100%;
     opacity: 0.2;
-    box-shadow: 0 2.9px 2.2px var(--v-primary-base),
-      0 6.7px 5.3px var(--v-primary-base), 0 12.5px 10px var(--v-primary-base),
-      0 22.3px 17.9px var(--v-primary-base),
-      0 41.8px 33.4px var(--v-primary-base), 0 100px 80px var(--v-primary-base);
+    box-shadow: 0 2.9px 2.2px var(--v-accent-base),
+      0 6.7px 5.3px var(--v-accent-base), 0 12.5px 10px var(--v-accent-base),
+      0 22.3px 17.9px var(--v-accent-base), 0 41.8px 33.4px var(--v-accent-base),
+      0 100px 80px var(--v-accent-base);
     z-index: -1;
-    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: all 1.6s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
 }
 
 .draggable-container:hover {
-  //transform: scale(1.1, 1.1);
+  transform: scale(1.05, 1.05) rotate3d(1, 1, 1, 10deg);
   &::after {
-    box-shadow: 0 2.9px 2.2px var(--v-primary-base),
-      0 6.7px 5.3px var(--v-primary-base), 0 12.5px 10px var(--v-primary-base),
-      0 22.3px 17.9px var(--v-primary-base),
-      0 41.8px 33.4px var(--v-primary-base), 0 100px 80px var(--v-primary-base);
+    box-shadow: 0 2.9px 2.2px var(--v-accent-base),
+      0 6.7px 5.3px var(--v-accent-base), 0 12.5px 10px var(--v-accent-base),
+      0 22.3px 17.9px var(--v-accent-base), 0 41.8px 33.4px var(--v-accent-base),
+      0 100px 80px var(--v-accent-base);
     opacity: 0.3;
-  }
-}
-.hook {
-  inset: auto auto calc(100% - 12px) calc(100% - 12px);
-  background-color: #aabbcc;
-  border-radius: 10px;
-  color: cornflowerblue;
-  font-size: 12px;
-  height: 20px;
-  letter-spacing: 0;
-  min-width: 20px;
-  padding: 4px 6px;
-  pointer-events: auto;
-  position: absolute;
-  text-align: center;
-  text-indent: 0;
-  top: 20%;
-  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-  white-space: nowrap;
-  border: 1px solid #fff;
-  //box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-.hook:hover {
-  background-color: cornflowerblue;
-  border: 1px solid #fff;
-}
-
-.inputs {
-  opacity: 0;
-  transition: opacity 0.4s;
-  .inputSlot {
-    position: absolute;
-  }
-  .circle {
-    background-color: var(--v-secondary-base);
-    //box-sizing: border-box;
-    width: 8px;
-    height: 8px;
-    border: 1px solid var(--v-primary-lighten3);
-    border-radius: 100%;
-    opacity: 1;
-    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
 }
 </style>
