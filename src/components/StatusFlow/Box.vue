@@ -5,34 +5,52 @@
     @dragenter.prevent
     @mousedown.self="onStartDrag"
     @mouseup="onStopDrag"
-    @mouseover.self="mouseOver"
-    @mouseout="mouseOut"
     ref="draggableContainer"
-    id=""
     class="draggable-container rounded "
     style="z-index: 9"
     :style="{ top: y, left: x }"
   >
     {{ status.title }}
+    <span class="box-badge">{{ status.id }}</span>
     <div class="inputs" ref="inputs">
       <SocketIn
-        v-for="id in configSockets"
-        :key="'in' + id"
-        :linkNo="id"
+        v-for="(linkNo, linkId) in flowConfig.sockets.in.topSocketsNumbers"
+        :key="'socketIn' + linkNo"
+        :linkNo="linkNo"
+        :link-id="linkId"
         :status="status"
+        :top-position="-6"
+      />
+      <SocketIn
+        v-for="(linkNo, linkId) in flowConfig.sockets.in.bottomSocketsNumbers"
+        :key="'socketIn' + linkNo"
+        :linkNo="linkNo"
+        :link-id="linkId"
+        :status="status"
+        :top-position="23"
       />
       <SocketOut
-        v-for="id in configSockets"
-        :key="id"
-        :linkNo="id"
+        v-for="(linkNo, linkId) in flowConfig.sockets.out.topSocketsNumbers"
+        :key="linkNo"
+        :linkNo="linkNo"
+        :link-id="linkId"
         :status="status"
+        :top-position="-6"
+      />
+      <SocketOut
+        v-for="(linkNo, linkId) in flowConfig.sockets.out.bottomSocketsNumbers"
+        :key="linkNo"
+        :linkNo="linkNo"
+        :link-id="linkId"
+        :status="status"
+        :top-position="23"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import SocketOut from "@/components/StatusFlow/Link/SocketOut";
 import SocketIn from "@/components/StatusFlow/Link/SocketIn";
 
@@ -44,16 +62,17 @@ export default {
   },
   data: function() {
     return {
-      configSockets: [1, 2, 3, 4, 5],
       positions: {
         currentX: 0,
         currentY: 0,
         initialX: null,
         initialY: null
-      }
+      },
+      socketsGap: 9
     };
   },
   computed: {
+    ...mapState({ flowConfig: state => state.flow.config }),
     x: function() {
       return this.status.position.x + "px";
     },
@@ -62,8 +81,6 @@ export default {
     }
   },
   mounted() {
-    // this.$refs.draggableContainer.style.top = this.y + "px";
-    // this.$refs.draggableContainer.style.left = this.x + "px";
     this.$nextTick(function() {
       this.setWidth({
         statusId: this.status.id,
@@ -77,17 +94,16 @@ export default {
       setWidth: "flow/setWidth",
       setDragPayload: "flow/setDragPayload"
     }),
-    mouseOver() {
-      // this.$refs.inputs.style.opacity = 1;
-    },
-    mouseOut() {
-      // this.$refs.inputs.style.opacity = 0;
-    },
     onDrag(event) {
       event.preventDefault();
       this.positions.clientX = event.clientX;
       this.positions.clientY = event.clientY;
-
+      this.setDragPayload({
+        originId: null,
+        targetId: null,
+        position: { x: 0, y: 0 },
+        nodeIn: null
+      });
       document.onmousemove = this.onMove;
       document.onmouseup = this.onStopDrag;
     },
@@ -117,7 +133,8 @@ export default {
         originId: null,
         targetId: null,
         position: { x: 0, y: 0 },
-        nodeIn: null
+        nodeIn: null,
+        restoring: false
       });
     },
     onStartDrag() {
@@ -135,7 +152,7 @@ export default {
   text-align: center;
   color: var(--v-primary-base);
   background-color: var(--v-secondary-base);
-  padding: 3px 15px 4px 15px;
+  padding: 3px 35px 4px 35px;
   //transform: scale(1, 1) rotate3d(1, 1, 1, 0deg);
   transition: box-shadow 300ms, transform 300ms;
   border-color: var(--v-primary-lighten5);
@@ -149,24 +166,46 @@ export default {
     top: 0;
     width: 100%;
     height: 100%;
-    opacity: 0.2;
-    box-shadow: 0 2.9px 2.2px var(--v-accent-base),
-      0 6.7px 5.3px var(--v-accent-base), 0 12.5px 10px var(--v-accent-base),
-      0 22.3px 17.9px var(--v-accent-base), 0 41.8px 33.4px var(--v-accent-base),
-      0 100px 80px var(--v-accent-base);
+    opacity: 0.1;
+    box-shadow: 0 2.9px 2.2px var(--v-primary-darken3),
+      0 6.7px 5.3px var(--v-primary-darken3),
+      0 12.5px 10px var(--v-primary-darken3),
+      0 22.3px 17.9px var(--v-primary-darken3),
+      0 41.8px 33.4px var(--v-primary-darken3),
+      0 100px 80px var(--v-primary-darken3);
     z-index: -1;
     transition: all 1.6s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
 }
 
 .draggable-container:hover {
-  transform: scale(1.05, 1.05) rotate3d(1, 1, 1, 10deg);
+  transform: scale(1, 1) rotate3d(1, 1, 1, 5deg);
+  //transform: perspective(1500px) rotateY(25deg) translateX(1px) scale(1.1, 1.08);
   &::after {
-    box-shadow: 0 2.9px 2.2px var(--v-accent-base),
-      0 6.7px 5.3px var(--v-accent-base), 0 12.5px 10px var(--v-accent-base),
-      0 22.3px 17.9px var(--v-accent-base), 0 41.8px 33.4px var(--v-accent-base),
-      0 100px 80px var(--v-accent-base);
-    opacity: 0.3;
+    //box-shadow: 0 2.9px 2.2px var(--v-primary-darken3),
+    //  0 6.7px 5.3px var(--v-primary-darken3),
+    //  0 12.5px 10px var(--v-primary-darken3),
+    //  0 22.3px 17.9px var(--v-primary-darken3),
+    //  0 41.8px 33.4px var(--v-primary-darken3),
+    //  0 100px 80px var(--v-primary-darken3);
+    opacity: 0.2;
   }
+}
+.box-badge {
+  font-size: xx-small;
+  position: absolute;
+  top: 5px;
+  right: 2px;
+  background-color: var(--v-accent-lighten2);
+  border-radius: 100%;
+  border: 1px solid var(--v-accent-base);
+  min-width: 15px;
+  min-height: 8px;
+  text-align: center;
+}
+</style>
+<style lang="scss">
+.circle {
+  box-shadow: 0 1.9px 6.2px -2.5px var(--v-primary-base);
 }
 </style>

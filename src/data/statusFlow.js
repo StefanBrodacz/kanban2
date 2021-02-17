@@ -7,13 +7,13 @@ export default {
       link: [
         {
           targetId: 2,
-          node: { out: 5, in: 1 },
-          in: { position: { x: 268, y: 40 }, socket: 1 }
+          node: { out: 5, in: 6 },
+          in: { position: { x: 268, y: 40 }, socket: 6 }
         },
         {
           targetId: 2,
-          node: { out: 4, in: 2 },
-          in: { position: { x: 274, y: 40 }, socket: 2 }
+          node: { out: 4, in: 10 },
+          in: { position: { x: 274, y: 40 }, socket: 10 }
         }
       ],
       width: 98
@@ -21,7 +21,7 @@ export default {
     {
       id: 2,
       title: "Analizowany",
-      position: { x: 419, y: 181 },
+      position: { x: 447, y: 134 },
       link: [
         {
           targetId: 3,
@@ -79,8 +79,13 @@ export default {
         },
         {
           targetId: 43,
-          node: { out: 3, in: 4 },
-          in: { position: { x: 297, y: 410 }, socket: 4 }
+          node: { out: 3, in: 7 },
+          in: { position: { x: 297, y: 410 }, socket: 7 }
+        },
+        {
+          targetId: 10,
+          node: { out: 1, in: 10 },
+          in: { position: { x: 878, y: 660 }, socket: 10 }
         }
       ],
       width: 117
@@ -88,7 +93,7 @@ export default {
     {
       id: 43,
       title: "Waiting for feedback",
-      position: { x: 430, y: 551 },
+      position: { x: 362, y: 557 },
       link: [
         {
           targetId: 1,
@@ -97,13 +102,13 @@ export default {
         },
         {
           targetId: 10,
-          node: { out: 2, in: 5 },
-          in: { position: { x: 381, y: 232 }, socket: 5 }
+          node: { out: 2, in: 8 },
+          in: { position: { x: 381, y: 232 }, socket: 8 }
         },
         {
           targetId: 10,
-          node: { out: 4, in: 4 },
-          in: { position: { x: 387, y: 232 }, socket: 4 }
+          node: { out: 4, in: 7 },
+          in: { position: { x: 387, y: 232 }, socket: 7 }
         }
       ],
       width: 149
@@ -115,8 +120,8 @@ export default {
       link: [
         {
           targetId: 4,
-          node: { out: 1, in: 5 },
-          in: { position: { x: 1055, y: 279 }, socket: 5 }
+          node: { out: 1, in: 10 },
+          in: { position: { x: 1055, y: 279 }, socket: 10 }
         }
       ],
       width: 98
@@ -128,8 +133,8 @@ export default {
       link: [
         {
           targetId: 6,
-          node: { out: 5, in: 1 },
-          in: { position: { x: 1337, y: 372 }, socket: 1 }
+          node: { out: 5, in: 6 },
+          in: { position: { x: 1337, y: 372 }, socket: 6 }
         }
       ],
       width: 98
@@ -137,12 +142,12 @@ export default {
     {
       id: 6,
       title: "Czeka na tag",
-      position: { x: 1488, y: 513 },
+      position: { x: 1513, y: 489 },
       link: [
         {
           targetId: 7,
-          node: { out: 5, in: 1 },
-          in: { position: { x: 1340, y: 68 }, socket: 1 }
+          node: { out: 5, in: 7 },
+          in: { position: { x: 1340, y: 68 }, socket: 7 }
         }
       ],
       width: 105
@@ -167,8 +172,8 @@ export default {
       link: [
         {
           targetId: 9,
-          node: { out: 5, in: 1 },
-          in: { position: { x: 549, y: 136 }, socket: 1 }
+          node: { out: 5, in: 6 },
+          in: { position: { x: 549, y: 136 }, socket: 6 }
         },
         {
           targetId: 42,
@@ -187,6 +192,11 @@ export default {
           targetId: 10,
           node: { out: 5, in: 1 },
           in: { position: { x: 357, y: 232 }, socket: 1 }
+        },
+        {
+          targetId: 9,
+          node: { out: 4, in: 5 },
+          in: { position: { x: 807, y: 278 }, socket: 5 }
         }
       ],
       width: 143
@@ -194,12 +204,17 @@ export default {
     {
       id: 10,
       title: "DONE",
-      position: { x: 508, y: 373 },
+      position: { x: 495, y: 376 },
       link: [
         {
           targetId: 1,
           node: { out: 5, in: 1 },
           in: { position: { x: 104, y: 96 }, socket: 1 }
+        },
+        {
+          targetId: 10,
+          node: { out: 3, in: 4 },
+          in: { position: { x: 575, y: 374 }, socket: 4 }
         }
       ],
       width: 98

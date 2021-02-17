@@ -106,7 +106,7 @@ export default {
 </script>
 <style>
 * {
-  transition: 0.4s background-color ease-in-out;
+  transition: 0.1s background-color cubic-bezier(0, 0.48, 1, 0.73);
 }
 .slide-fade-enter {
   opacity: 0;

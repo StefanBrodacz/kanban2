@@ -1,12 +1,6 @@
 <template>
-  <div
-    @mousedown.middle="mouseMiddleDown"
-    style=""
-    @wheel="zoom"
-    ref="zoomable"
-    id="viewport"
-  >
-    <svg width="100%" height="100%">
+  <div style="" @wheel="zoom" ref="zoomable" id="viewport">
+    <svg @mousedown.middle.self="mouseMiddleDown" width="100%" height="100%">
       <Link
         v-for="(link, statusId) in links"
         :key="`link${statusId}`"
@@ -59,7 +53,9 @@ export default {
   methods: {
     ...mapActions({
       setViewportOffset: "flow/setViewportOffset",
-      dragView: "flow/dragView"
+      dragView: "flow/dragView",
+      editViewport: "flow/editViewport",
+      setDragPayload: "flow/setDragPayload"
     }),
     zoom(e) {
       let zoomable = this.$refs.zoomable;
@@ -80,6 +76,13 @@ export default {
     mouseMiddleDown(e) {
       this.viewStartPosition.x = e.x;
       this.viewStartPosition.y = e.y;
+      this.editViewport({ moving: true });
+      this.setDragPayload({
+        originId: null,
+        targetId: null,
+        position: { x: 0, y: 0 },
+        nodeIn: null
+      });
       document.onmousemove = this.onViewMove;
       document.onmouseup = this.onViewStopDrag;
     },
@@ -91,6 +94,7 @@ export default {
       this.dragView({ x: xMove, y: yMove });
     },
     onViewStopDrag() {
+      this.editViewport({ moving: false });
       document.onmousemove = null;
       document.onmouseup = null;
     },

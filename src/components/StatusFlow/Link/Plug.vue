@@ -1,13 +1,5 @@
 <template>
-  <circle
-    draggable
-    @drag.self="onDrag"
-    @mousedown.self="onStartDrag"
-    r="5"
-    :cx="x"
-    :cy="y"
-    style="z-index:101"
-  />
+  <circle r="4" :cx="x" :cy="y" style="z-index:101" />
 </template>
 
 <script>
@@ -22,7 +14,6 @@ export default {
     targetId: { type: Number },
     nodeIn: { type: Number }
   },
-  watch: {},
   computed: {
     ...mapState({ config: state => state.flow.config })
   },
@@ -65,8 +56,8 @@ export default {
 
 <style lang="scss" module>
 circle {
-  stroke: var(--v-accent-lighten3);
-  fill: var(--v-accent-lighten3);
+  stroke: var(--v-accent-base);
+  fill: var(--v-accent-base);
   fill-opacity: 1;
 }
 </style>

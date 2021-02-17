@@ -33,7 +33,7 @@
                   :drop-placeholder="dropPlaceholderOptions"
                 >
                   <Draggable v-for="card in column.cards" :key="card.id">
-                    <v-card class="mb-1 ma-1" outlined>
+                    <v-card class="mb-1 ma-1 ticket" outlined>
                       <v-card-subtitle>
                         {{ card.data }}
                       </v-card-subtitle>
@@ -149,5 +149,35 @@ export default {
 <style lang="scss" scoped>
 .container .smooth-dnd-container.horizontal {
   display: flex;
+}
+.column-drag-handle {
+  &::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.04;
+    box-shadow: 0 2.9px 2.2px var(--v-accent-base),
+      0 6.7px 5.3px var(--v-accent-base), 0 12.5px 10px var(--v-accent-base),
+      0 22.3px 17.9px var(--v-accent-base), 0 41.8px 33.4px var(--v-accent-base),
+      0 100px 80px var(--v-accent-base);
+  }
+}
+.card-ghost {
+  &::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.2;
+    box-shadow: 0 2.9px 2.2px var(--v-accent-base),
+      0 6.7px 5.3px var(--v-accent-base), 0 12.5px 10px var(--v-accent-base),
+      0 22.3px 17.9px var(--v-accent-base), 0 41.8px 33.4px var(--v-accent-base),
+      0 100px 80px var(--v-accent-base);
+  }
 }
 </style>
