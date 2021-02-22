@@ -23,9 +23,6 @@
       <Plug
         :x="p.endPosition.x"
         :y="p.endPosition.y"
-        :originId="p.originId"
-        :targetId="p.targetId"
-        :nodeIn="p.nodeIn"
         :class="{ slow: isRestored }"
       />
     </g>
@@ -76,10 +73,13 @@ export default {
         this.topSocketIndex(linkNo) > -1
           ? this.topSocketIndex(linkNo)
           : this.bottomSocketIndex(linkNo);
-      return (socketIndex + 1) * this.flowConfig.sockets.gap;
+      return (
+        (socketIndex + 1) * this.flowConfig.sockets.gap +
+        this.flowConfig.sockets.margin
+      );
     },
     verticalPosition(linkNo) {
-      return this.topSocketIndex(linkNo) > -1 ? 0 : 23;
+      return this.topSocketIndex(linkNo) > -1 ? 0 : this.originBox.height;
     },
     thresholdY(linkNo) {
       let topIndex = this.flowConfig.sockets.out.topSocketsNumbers.findIndex(
@@ -115,7 +115,7 @@ export default {
       for (let link of this.links) {
         let y1 =
           this.originBox.position.y + this.verticalPosition(link.node.out);
-        let x1 = xOut - this.horizontalPosition(link.node.out) + 4;
+        let x1 = xOut - this.horizontalPosition(link.node.out);
         let x2, y2;
         if (
           this.dragPayload.originId === this.originBox.id &&
@@ -134,8 +134,7 @@ export default {
           }
           x2 =
             this.targetBoxes(link.targetId).position.x +
-            this.horizontalPosition(link.in.socket) -
-            4;
+            this.horizontalPosition(link.in.socket);
 
           y2 =
             this.targetBoxes(link.targetId).position.y +

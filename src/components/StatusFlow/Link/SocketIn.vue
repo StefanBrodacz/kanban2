@@ -29,14 +29,18 @@ export default {
       flowConfig: state => state.flow.config
     }),
     horizontalPosition() {
-      return this.flowConfig.sockets.gap * this.linkId;
+      return (
+        this.flowConfig.sockets.gap * this.linkId +
+        7 +
+        this.flowConfig.sockets.margin
+      );
     },
     link() {
       let targets = this.findStatusesByTarget(this.status.id);
       return targets.find(status => {
         return status.link.find(link => {
           return (
-            link.node.in === this.linkNo && link.targetId === this.status.id
+            link.in.socket === this.linkNo && link.targetId === this.status.id
           );
         });
       });
@@ -96,6 +100,7 @@ export default {
           newTargetId: this.status.id,
           newNodeIn: this.linkNo
         });
+      this.$emit("plugged-in");
     },
     findStatusesByTarget(targetId) {
       return this.flow.statuses.filter(status => {
@@ -150,14 +155,14 @@ export default {
     z-index: 11;
     opacity: 1;
     background-color: var(--v-secondary-base);
-    border: 2px solid var(--v-scondary-darken1);
+    border: 2px solid var(--v-scondary-darken4);
     cursor: pointer;
     //box-shadow: 0 -2.9px 2.2px var(--v-error-base),
     //  0 -6.7px 5.3px var(--v-error-base), 0 -12.5px 10px var(--v-error-base),
     //  0 -22.3px 17.9px var(--v-error-base), 0 -41.8px 33.4px var(--v-error-base),
     //  0 -100px 80px var(--v-error-base);
-    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-    transform: scale(1.15, 1.15) translate(1px, -1px);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: scale(1.35, 1.35) translate(1px, -1px);
   }
 }
 </style>

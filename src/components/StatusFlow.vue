@@ -1,6 +1,11 @@
 <template>
-  <div style="" @wheel="zoom" ref="zoomable" id="viewport">
-    <svg @mousedown.middle.self="mouseMiddleDown" width="100%" height="100%">
+  <div @wheel="zoom" ref="zoomable" id="viewport">
+    <svg
+      @click.right.prevent="onRightClick"
+      @mousedown.middle.self="mouseMiddleDown"
+      width="100%"
+      height="100%"
+    >
       <Link
         v-for="(link, statusId) in links"
         :key="`link${statusId}`"
@@ -9,10 +14,21 @@
       />
     </svg>
     <Box
+      @socket-right-click="socketEvent"
       v-for="(status, statusId) in flow.statuses"
       :key="statusId"
       :status="status"
     ></Box>
+    <SocketContextMenu
+      :show-menu="socketContextMenu.showMenu"
+      :payload="socketContextMenu.contextMenuPayload"
+      :mouse-event="socketContextMenu.mouseEvent"
+    />
+    <FlowContextMenu
+      :show-menu="flowContextMenu.showMenu"
+      :payload="flowContextMenu.contextMenuPayload"
+      :mouse-event="flowContextMenu.mouseEvent"
+    />
   </div>
 </template>
 
@@ -21,16 +37,28 @@ import Link from "@/components/StatusFlow/Link";
 
 import Box from "@/components/StatusFlow/Box";
 import { mapActions, mapState } from "vuex";
+import SocketContextMenu from "@/components/StatusFlow/SocketContextMenu";
+import FlowContextMenu from "@/components/StatusFlow/FlowContextMenu";
 export default {
   name: "StatusFlow",
   data() {
     return {
       dialog: true,
       zX: 0,
-      viewStartPosition: { x: 0, y: 0 }
+      viewStartPosition: { x: 0, y: 0 },
+      socketContextMenu: {
+        showMenu: false,
+        mouseEvent: null,
+        contextMenuPayload: null
+      },
+      flowContextMenu: {
+        showMenu: false,
+        mouseEvent: null,
+        contextMenuPayload: null
+      }
     };
   },
-  components: { Link, Box },
+  components: { FlowContextMenu, SocketContextMenu, Link, Box },
   mounted() {
     let rect = this.$refs.zoomable.getBoundingClientRect();
     this.setViewportOffset({ x: rect.left, y: rect.top });
@@ -57,6 +85,16 @@ export default {
       editViewport: "flow/editViewport",
       setDragPayload: "flow/setDragPayload"
     }),
+    socketEvent(mouseevent, payload) {
+      this.socketContextMenu.showMenu = true;
+      this.socketContextMenu.mouseEvent = mouseevent;
+      this.socketContextMenu.contextMenuPayload = payload;
+    },
+    onRightClick(e) {
+      this.flowContextMenu.showMenu = true;
+      this.flowContextMenu.mouseEvent = e;
+      this.flowContextMenu.contextMenuPayload = {};
+    },
     zoom(e) {
       let zoomable = this.$refs.zoomable;
 

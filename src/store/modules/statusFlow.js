@@ -11,7 +11,8 @@ const dragPayload = {
 const config = {
   viewportOffset: { x: 0, y: 0 },
   sockets: {
-    gap: 9,
+    gap: 11,
+    margin: 7,
     in: {
       topSocketsNumbers: [1, 2, 3, 4, 5, 11],
       bottomSocketsNumbers: [6, 7, 8, 9, 10, 12]
@@ -44,20 +45,12 @@ export const mutations = {
       status.position.y -= position.y;
     }
   },
-  SET_WIDTH(state, { statusId, width }) {
+  SET_DIMENSION(state, { statusId, width, height }) {
     let status = state.statusFlow.statuses.find(status => {
       return status.id === statusId;
     });
     status.width = width;
-  },
-  SET_TARGET_LINK_POSITION(state, { originId, targetId, nodeIn, position }) {
-    state.statusFlow.statuses
-      .find(status => {
-        return status.id === originId;
-      })
-      .link.find(link => {
-        return link.targetId === targetId && link.in.socket === nodeIn;
-      }).in.position = position;
+    status.height = height;
   },
   PLUGIN(state, { originId, oldTargetId, newTargetId, newNodeIn }) {
     let link = state.statusFlow.statuses
@@ -68,7 +61,6 @@ export const mutations = {
         return link.targetId === oldTargetId;
       });
     link.in.socket = newNodeIn;
-    link.node.in = newNodeIn;
     link.targetId = newTargetId;
   },
   SET_DRAG_PAYLOAD(state, { originId, targetId, position, nodeIn, restoring }) {
@@ -82,15 +74,16 @@ export const mutations = {
     state.config.viewportOffset.x = x;
     state.config.viewportOffset.y = y;
   },
-  ADD_LINK(state, { originId, targetId, nodeOut, position }) {
+  ADD_LINK(state, { originId, targetId, outSocket }) {
     state.statusFlow.statuses
       .find(status => {
         return status.id === originId;
       })
       .link.push({
         targetId: targetId,
-        node: { out: nodeOut, in: 0 },
-        in: { position: position, socket: 0 }
+        node: { out: outSocket, in: 0 },
+        in: { socket: 0 },
+        out: { socket: outSocket }
       });
   },
   REMOVE_LINK(state, { originId, targetId }) {
@@ -101,6 +94,15 @@ export const mutations = {
       return link.targetId === targetId;
     });
     links.splice(indexToRemove, 1);
+  },
+  ADD_STATUS(state, { id, title, position }) {
+    state.statusFlow.statuses.push({ id, title, position, link: [] });
+  },
+  REMOVE_STATUS(state, originId) {
+    let indexToRemove = state.statusFlow.statuses.findIndex(status => {
+      return status.id === originId;
+    });
+    state.statusFlow.statuses.splice(indexToRemove, 1);
   },
   EDIT_VIEWPORT(state, viewport) {
     for (let prop in viewport) {
@@ -122,19 +124,11 @@ export const actions = {
       });
     });
   },
-  setWidth({ commit }, { statusId, width }) {
-    commit("SET_WIDTH", { statusId, width });
+  setDimension({ commit }, { statusId, width, height }) {
+    commit("SET_DIMENSION", { statusId, width, height });
   },
   plugin({ commit }, { originId, oldTargetId, newTargetId, newNodeIn }) {
     commit("PLUGIN", { originId, oldTargetId, newTargetId, newNodeIn });
-  },
-  setTargetLinkPosition({ commit }, { originId, targetId, nodeIn, position }) {
-    commit("SET_TARGET_LINK_POSITION", {
-      originId,
-      targetId,
-      nodeIn,
-      position
-    });
   },
   setDragPayload(
     { commit },
@@ -151,11 +145,28 @@ export const actions = {
   setViewportOffset({ commit }, { x, y }) {
     commit("SET_VIEWPORT_OFFSET", { x, y });
   },
-  addLink({ commit }, { originId, targetId, nodeOut, position }) {
-    commit("ADD_LINK", { originId, targetId, nodeOut, position });
+  addLink({ commit }, { originId, targetId, outSocket }) {
+    commit("ADD_LINK", { originId, targetId, outSocket });
   },
   removeLink({ commit }, { originId, targetId }) {
     commit("REMOVE_LINK", { originId, targetId });
+  },
+  addStatus({ commit, state }, { title, position }) {
+    let id =
+      Math.max(...state.statusFlow.statuses.map(status => status.id)) + 1;
+    commit("ADD_STATUS", { id, title, position });
+  },
+  removeStatus({ commit, state }, originId) {
+    let statusesWithTarget = state.statusFlow.statuses.filter(status => {
+      return status.link.find(link => {
+        return link.targetId === originId;
+      });
+    });
+
+    for (let target of statusesWithTarget) {
+      commit("REMOVE_LINK", { originId: target.id, targetId: originId });
+    }
+    commit("REMOVE_STATUS", originId);
   },
   editViewport({ commit }, viewport) {
     commit("EDIT_VIEWPORT", viewport);

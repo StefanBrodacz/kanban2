@@ -1,5 +1,11 @@
 <template>
   <div
+    @click.right.prevent="
+      $emit('socket-right-click', $event, {
+        originId: status.id,
+        linkId: isPlugged ? link.targetId : 0
+      })
+    "
     @mousedown.left="onPlugDown"
     ref="socket"
     class="inputSlot circle"
@@ -30,7 +36,11 @@ export default {
   computed: {
     ...mapState({ flowConfig: state => state.flow.config }),
     horizontalPosition() {
-      return this.flowConfig.sockets.gap * this.linkId - 3;
+      return (
+        this.flowConfig.sockets.gap * this.linkId +
+        2 +
+        this.flowConfig.sockets.margin
+      );
     },
     link() {
       return this.status.link.find(link => {
@@ -60,7 +70,6 @@ export default {
       addLink: "flow/addLink",
       removeLink: "flow/removeLink"
     }),
-
     onPlugDown(e) {
       e.preventDefault();
       document.onmousemove = this.onPlugMove;
@@ -69,8 +78,7 @@ export default {
         this.addLink({
           originId: this.status.id,
           targetId: this.targetId,
-          nodeOut: this.linkNo,
-          position: { x: e.x, y: e.y }
+          outSocket: this.linkNo
         });
         this.pluggedTemporary = true;
       }
@@ -159,7 +167,7 @@ export default {
     //  0 -22.3px 17.9px var(--v-error-base), 0 -41.8px 33.4px var(--v-error-base),
     //  0 -100px 80px var(--v-error-base);
     transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-    transform: scale(1.15, 1.15) translate(1px, -1px);
+    transform: scale(1.35, 1.35) translate(1px, -1px);
   }
 }
 </style>
